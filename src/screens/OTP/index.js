@@ -14,7 +14,6 @@ const OTP = ({ email }) => {
         try {
             await Auth.confirmSignUp(email, verificationCode);
             console.log('Email verification successful');
-            // Redirect the user to the desired screen after successful verification.
 
         } catch (error) {
             console.log('Error verifying email:', error);

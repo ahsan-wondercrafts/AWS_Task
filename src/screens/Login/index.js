@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 Amplify.configure(awsconfig);
 
 const Login = () => {
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -26,7 +27,7 @@ const Login = () => {
         try {
             await Auth.signIn(username, password);
             console.log('Successfully signed in');
-            // Navigate to the next screen or perform any additional actions
+            
         } catch (error) {
             console.log('Error signing in:', error);
         }

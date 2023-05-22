@@ -1,9 +1,13 @@
-import { Box, Button, Center, FormControl, Heading, Input, Modal, VStack, AlertDialog } from 'native-base';
+import { Box, Button, Center, FormControl, Heading, Input, Modal, VStack } from 'native-base';
 import React, { useState } from 'react';
 import { Auth } from 'aws-amplify';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
 const SignUp = () => {
+
+    const navigation = useNavigation()
+
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -49,11 +53,10 @@ const SignUp = () => {
 
         try {
             await Auth.signUp({
-                username: email,
+                username: username,
                 password: password,
                 attributes: {
                     email: email,
-                    preferred_username: username,
                 },
             });
             console.log('Sign-up successful');
@@ -65,15 +68,38 @@ const SignUp = () => {
     };
 
     const handleVerifyCode = async () => {
+
         try {
             await Auth.confirmSignUp(email, verificationCode);
             console.log('Verification successful');
+            navigation.navigate('Sign In')
 
 
         } catch (error) {
             console.log('Error verifying code:', error);
+
         }
+
+        // try {
+        //     await Auth.confirmSignUp(email, verificationCode);
+        //     console.log('Verification successful');
+
+
+        // } catch (error) {
+        //     console.log('Error verifying code:', error);
+        // }
     };
+
+    const resendCode = async () => {
+
+        try {
+            await Auth.resendSignUp(email);
+            console.log('New verification code has been sent to ', email);
+
+        } catch (resendError) {
+            console.log('Error resending verification code:', resendError);
+        }
+    }
 
 
 
@@ -84,6 +110,7 @@ const SignUp = () => {
                     Welcome
                 </Heading>
                 <VStack space={3} mt="5">
+
                     <FormControl>
                         <FormControl.Label>Username</FormControl.Label>
                         <Input
@@ -162,7 +189,8 @@ const SignUp = () => {
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button onPress={handleVerifyCode}>Verify</Button>
+                        <Button marginRight={2} onPress={handleVerifyCode}>Verify</Button>
+                        <Button onPress={resendCode}>Resend Code</Button>
                     </Modal.Footer>
                 </Modal.Content>
             </Modal>
