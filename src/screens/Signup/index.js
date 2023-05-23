@@ -60,6 +60,8 @@ const SignUp = () => {
                 },
             });
             console.log('Sign-up successful');
+            console.log('Sign-up info ::  username=', username, ' password= ', password, ' email= ', email);
+
             setShowVerificationModal(true);
 
         } catch (error) {
@@ -68,11 +70,17 @@ const SignUp = () => {
     };
 
     const handleVerifyCode = async () => {
+        
+        console.log('verificationCode===',verificationCode);
 
         try {
-            await Auth.confirmSignUp(email, verificationCode);
+            await Auth.confirmSignUp(username, verificationCode.trim());
             console.log('Verification successful');
             navigation.navigate('Sign In')
+            setUsername('')
+            setEmail('')
+            setPassword('')
+            setConfirmPassword('')
 
 
         } catch (error) {
@@ -80,14 +88,6 @@ const SignUp = () => {
 
         }
 
-        // try {
-        //     await Auth.confirmSignUp(email, verificationCode);
-        //     console.log('Verification successful');
-
-
-        // } catch (error) {
-        //     console.log('Error verifying code:', error);
-        // }
     };
 
     const resendCode = async () => {

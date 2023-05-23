@@ -1,4 +1,5 @@
-import { Box, Button, Center, FormControl, Heading, HStack, Input, Link, Stack, Text, VStack, WarningOutlineIcon } from 'native-base';
+import { Box, Button, Center, FormControl, Heading, Modal, Input, Link, VStack } from 'native-base';
+import { BackHandler } from 'react-native';
 import React, { useState } from 'react';
 import { Amplify, Auth } from 'aws-amplify';
 import awsconfig from '../../../aws-exports';
@@ -7,10 +8,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 Amplify.configure(awsconfig);
 
 const Login = () => {
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [showVerificationModal, setShowVerificationModal] = useState(false);
 
     const handleUsernameChange = (text) => {
         setUsername(text);
@@ -19,6 +20,7 @@ const Login = () => {
     const handlePasswordChange = (text) => {
         setPassword(text);
     };
+
     const handleTogglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
@@ -27,12 +29,26 @@ const Login = () => {
         try {
             await Auth.signIn(username, password);
             console.log('Successfully signed in');
-            
+            setShowVerificationModal(true);
+            setUsername('')
+            setPassword('')
+
         } catch (error) {
             console.log('Error signing in:', error);
         }
     };
+    const handleSignOut = async () => {
 
+        try {
+            await Auth.signOut()
+            BackHandler.exitApp()
+
+        } catch (error) {
+            console.log('Error SigningOut:', error);
+
+        }
+
+    };
     return (
         <Center w="100%" flex={1} safeArea>
             <Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -63,10 +79,7 @@ const Login = () => {
                             value={password}
                             InputRightElement={
                                 <Button variant="unstyled" onPress={handleTogglePasswordVisibility}>
-                                    <Icon
-                                        name={passwordVisible ? 'eye-slash' : 'eye'}
-                                        size={20}
-                                    />
+                                    <Icon name={passwordVisible ? 'eye-slash' : 'eye'} size={20} />
                                 </Button>
                             }
                         />
@@ -80,8 +93,18 @@ const Login = () => {
                     </Button>
                 </VStack>
             </Box>
+
+            <Modal isOpen={showVerificationModal} onClose={() => setShowVerificationModal(false)}>
+                <Modal.Content>
+                    <Modal.Header>SignIn Successfull ! </Modal.Header>
+
+                    <Modal.Footer>
+                        <Button onPress={handleSignOut}>SignOut</Button>
+                    </Modal.Footer>
+                </Modal.Content>
+            </Modal>
         </Center>
     );
-}
+};
 
 export default Login;
